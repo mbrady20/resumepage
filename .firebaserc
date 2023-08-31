@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "myresumepage-42803"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
