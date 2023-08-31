@@ -29,6 +29,7 @@ import { Image, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { petVoteState, submittedState } from "npm/states/selection_state";
 import { useRecoilState } from "recoil";
+import { DocumentData, QueryDocumentSnapshot, addDoc, collection, doc, getDoc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
 
 export default function Home() {
   const [petSelection, setPetSelection] =
@@ -44,6 +45,11 @@ export default function Home() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  function delay(time: number | undefined) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
+
+  
   useEffect(() => {
     validityCheck();
   }, [input]);
@@ -51,6 +57,18 @@ export default function Home() {
     if (/^[A-Za-z]{2,3}$/.test(input)) setValidInit(true);
     else setValidInit(false);
   }
+
+  const petDataConverter = {
+    toFirestore(pet: Pet): DocumentData {
+      return {name: pet.name, url: pet.url, avgWinShare: 0, firstPlaces: 0};
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot
+    ): Pet {
+      const data = snapshot.data();
+      return {name: data.name, url: data.url, avgWinShare: data.avgWinShare, firstPlaces: data.firstPlaces, roundsPlayed: data.roundsPlayed, petId: data.petId};
+    }
+  };
 
   function submitButton() {
     loop1: for (var i = 0; i < petSelection.length; i++) {
@@ -117,8 +135,79 @@ export default function Home() {
     petSelection.forEach((pet) => console.log(pet.rank));
   }
 
-  function submitPost() {
+  async function submitPost() {
+    var first = "";
+    var second = "";
+    var third = "";
+    var fourth = "";
+
+    petSelection.forEach((pet) => {
+      if(pet.rank === 1)
+        first = pet.petId;
+      else if(pet.rank === 2)
+        second = pet.petId;
+      else if(pet.rank === 3)
+        third = pet.petId;
+      else if(pet.rank === 4)
+        fourth = pet.petId;
+    })
     
+    const docRef = await addDoc(collection(db, "ranks"), {
+      initials: input,
+      firstPlacePetId: first,
+      secondPlacePetId: second,
+      thirdPlacePetId: third,
+      fourthPlacePetId: fourth
+    })
+
+
+    const firstQuery = query(collection(db, "pets"), where("petId", "==", first), limit(1)).withConverter(petDataConverter);
+    const firstDoc = (await getDocs(firstQuery)).docs[0]
+    const firstDocRef = firstDoc!.ref;
+    const firstDocData = firstDoc!.data();
+    
+    const secondQuery = query(collection(db, "pets"), where("petId", "==", second), limit(1)).withConverter(petDataConverter);
+    const secondDoc = (await getDocs(secondQuery)).docs[0]
+    const secondDocRef = secondDoc!.ref;
+    const secondDocData = secondDoc!.data();
+
+    const thirdQuery = query(collection(db, "pets"), where("petId", "==", third), limit(1)).withConverter(petDataConverter);
+    const thirdDoc = (await getDocs(thirdQuery)).docs[0]
+    const thirdDocRef = thirdDoc!.ref;
+    const thirdDocData = thirdDoc!.data();
+
+    const fourthQuery = query(collection(db, "pets"), where("petId", "==", fourth), limit(1)).withConverter(petDataConverter);
+    const fourthDoc = (await getDocs(fourthQuery)).docs[0]
+    const fourthDocRef = fourthDoc!.ref;
+    const fourthDocData = fourthDoc!.data();
+
+    await updateDoc(firstDocRef, {
+      roundsPlayed: firstDocData.roundsPlayed + 1,
+      firstPlaces: firstDocData.firstPlaces + 1,
+      avgWinShare: avgWinShareCalc(1, firstDocData.roundsPlayed, firstDocData.avgWinShare)
+    })
+
+    await updateDoc(secondDocRef, {
+      roundsPlayed: secondDocData.roundsPlayed + 1,
+      avgWinShare: avgWinShareCalc(2, secondDocData.roundsPlayed, secondDocData.avgWinShare)
+    })
+
+    await updateDoc(thirdDocRef, {
+      roundsPlayed: thirdDocData.roundsPlayed + 1,
+      avgWinShare: avgWinShareCalc(3, thirdDocData.roundsPlayed, thirdDocData.avgWinShare)
+    })
+
+    await updateDoc(fourthDocRef, {
+      roundsPlayed: fourthDocData.roundsPlayed + 1,
+      avgWinShare: avgWinShareCalc(2, fourthDocData.roundsPlayed, fourthDocData.avgWinShare)
+    })
+
+    router.push("/petQuizData");
+    setIsSubmitted(true);
+  }
+
+  function avgWinShareCalc(place: number, gamesPlayedPrev: number, prevWinShare: number) {
+    return (((prevWinShare * gamesPlayedPrev) + 5 - place) / (gamesPlayedPrev + 1))/4;
   }
 
   return (
@@ -248,7 +337,7 @@ export default function Home() {
                   <Button
                     colorScheme="telegram"
                     onClick={submitPost}
-                    isDisabled={!validInit}
+                    isDisabled={!validInit && !isSubmitted}
                   >
                     Submit!
                   </Button>

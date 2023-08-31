@@ -10,7 +10,7 @@ import {
   Center,
   Spacer,
 } from "@chakra-ui/react";
-import { DocumentData, QueryDocumentSnapshot, collection, getDocs, limit, query } from "firebase/firestore";
+import { DocumentData, QueryDocumentSnapshot, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 
 import Head from "next/head";
 
@@ -41,9 +41,32 @@ export default function Home() {
     }
   };
 
+  function randOrderByOne() {
+    const num = Math.random() * 5;
+    if(num > 5)
+      return "petId";
+    if(num > 4)
+      return "name";
+    if (num > 3)
+      return "avgWinShare";
+    if(num > 2)
+      return "roundsPlayed";
+    if(num > 1)
+      return "url";
+    else
+      return "firstPlaces";
+  }
+
+  function randOrderByTwo() {
+    const num = Math.random();
+    if (num > 0.5)
+      return "asc";
+    else
+      return "desc";
+  }
   async function getData() {
 
-     const q =  query(collection(db, "pets"), limit(4)).withConverter(petConverter);
+     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
     var snapshot = (await getDocs(q)).docs;
     const array: PetImage[] = [];
     snapshot.forEach((doc) => {

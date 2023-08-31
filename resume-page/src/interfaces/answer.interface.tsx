@@ -16,6 +16,8 @@ interface Pet {
     name: string,
     url: string,
     avgWinShare: number,
-    firstPlaces: number
+    firstPlaces: number,
+    roundsPlayed: number,
+    petId: string
 }
 export type {Answer, PetImage, Pet}
