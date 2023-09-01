@@ -1,8 +1,9 @@
-interface Answer {
-    syd: number,
-    lok: number,
-    stu: number,
-    el: number
+interface Rank {
+    initials: string,
+    firstPlacePetId: string,
+    secondPlacePetId: string,
+    thirdPlacePetId: string,
+    fourthPlacePetId: string
 }
 
 interface PetImage {
@@ -20,4 +21,4 @@ interface Pet {
     roundsPlayed: number,
     petId: string
 }
-export type {Answer, PetImage, Pet}
+export type {Rank, PetImage, Pet}

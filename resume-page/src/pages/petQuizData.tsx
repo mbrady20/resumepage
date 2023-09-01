@@ -23,8 +23,10 @@ import {
   TooltipProps,
   Tr,
 } from "@chakra-ui/react";
+import { DocumentData, QueryDocumentSnapshot, collection, limit, query } from "firebase/firestore";
 import router from "next/router";
-import { Answer} from "npm/interfaces/answer.interface";
+import { db } from "npm/firebase/clientApp";
+import { Rank } from "npm/interfaces/answer.interface";
 import { answerState } from "npm/states/selection_state";
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
@@ -63,7 +65,6 @@ export default function PetQuizData() {
   const [stuPSum, setStuPsum] = useState(0);
   const [elPSum, setElPsum] = useState(0);
 
-  const [answer, setAnswer] = useRecoilState<Answer>(answerState);
   let sydCount = 0;
   let lokCount = 0;
   let stuCount = 0;
@@ -159,28 +160,8 @@ export default function PetQuizData() {
     },
   ];
 
-  const userResultImages = [
-    {
-      index: answer.syd,
-      value: "/sydney2.png",
-      name: "Sydney",
-    },
-    {
-      index: answer.lok,
-      value: "/loki.jpeg",
-      name: "Loki",
-    },
-    {
-      index: answer.stu,
-      value: "/stuart.png",
-      name: "Stuart",
-    },
-    {
-      index: answer.el,
-      value: "/elgato.png",
-      name: "El Gato",
-    },
-  ];
+  
+
 
   const averageResultImages = [
     {
@@ -255,6 +236,21 @@ export default function PetQuizData() {
   function recentButtonClick() {
     setViewMode1(true);
     setViewMode2(true);
+  }
+  const rankConverter = {
+    toFirestore(rank: Rank): DocumentData {
+      return {initials: rank.initials, firstPlacePetId: rank.firstPlacePetId, secondPlacePetId: rank.secondPlacePetId, thirdPlacePetId: rank.thirdPlacePetId, fourthPlacePetId: rank.fourthPlacePetId};
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot
+    ): Rank {
+      const data = snapshot.data();
+      return {initials: data.initials, firstPlacePetId: data.firstPlacePetId, secondPlacePetId: data.secondPlacePetId, thirdPlacePetId: data.thirdPlacePetId, fourthPlacePetId: data.fourthPlacePetId};
+    }
+  };
+
+  async function getData() {
+    const q = query(collection(db, "ranks"), limit(10));
   }
 
   return (
