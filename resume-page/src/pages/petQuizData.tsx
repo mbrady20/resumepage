@@ -155,16 +155,16 @@ export default function PetQuizData() {
     const q = query(collection(db, "ranks"), limit(5)).withConverter(rankConverter);
 
 
-    var snapshot = (await getDocs(q)).docs;
+    const snapshot = (await getDocs(q)).docs;
 
     const rankArray: DisplayRank[] = []
     snapshot.forEach(async (doc) => {
-      var  petArray: PetImage[] = []
+      let petArray: PetImage[] = []
 
-      var first = doc.data().firstPlacePetId;
-      var second = doc.data().secondPlacePetId;
-      var third = doc.data().thirdPlacePetId;
-      var fourth = doc.data().fourthPlacePetId;
+      const first = doc.data().firstPlacePetId;
+      const second = doc.data().secondPlacePetId;
+      const third = doc.data().thirdPlacePetId;
+      const fourth = doc.data().fourthPlacePetId;
 
       const firstQuery = query(collection(db, "pets"), where("petId", "==", first), limit(1)).withConverter(petConverter);
       const firstDoc = (await getDocs(firstQuery)).docs[0]
@@ -187,7 +187,7 @@ export default function PetQuizData() {
       petArray.push(thirdDocData);
       petArray.push(fourthDocData);
       
-      var rankData: DisplayRank = {
+      let rankData: DisplayRank = {
         initials: doc.data().initials,
         pets: petArray
       };
@@ -200,9 +200,9 @@ export default function PetQuizData() {
 
   async function getPieChartData() {
     const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("firstPlaces", "desc")).withConverter(petDataConverter);
-    var snapshot = (await getDocs(pieChartQuery)).docs;
+    const snapshot = (await getDocs(pieChartQuery)).docs;
 
-    var array: ChartData[] = [];
+    let array: ChartData[] = [];
     snapshot.forEach((doc) => {
       array.push(
         {
@@ -216,9 +216,9 @@ export default function PetQuizData() {
 
   async function getBarChartData() {
     const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("avgWinShare", "desc")).withConverter(petDataConverter);
-    var snapshot = (await getDocs(pieChartQuery)).docs;
+    const snapshot = (await getDocs(pieChartQuery)).docs;
 
-    var array: ChartData[] = [];
+    let array: ChartData[] = [];
     snapshot.forEach((doc) => {
       array.push(
         {name: doc.data().name,

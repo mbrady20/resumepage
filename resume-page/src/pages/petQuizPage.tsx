@@ -68,8 +68,8 @@ export default function Home() {
   };
 
   function submitButton() {
-    loop1: for (var i = 0; i < petSelection.length; i++) {
-      loop2: for (var j = 0; j < petSelection.length; j++) {
+    loop1: for (let i = 0; i < petSelection.length; i++) {
+      loop2: for (let j = 0; j < petSelection.length; j++) {
         if (
           petSelection.at(i)!.rank === petSelection.at(j)!.rank &&
           petSelection.at(i)!.petId != petSelection.at(j)!.petId
@@ -86,7 +86,7 @@ export default function Home() {
   function setAlertFeatures(e: boolean) {
     if (e) {
       setSubmitReady(true);
-      var text = "";
+      let text = "";
       petSelection.forEach((pet) => text.concat(pet.name + ": " + pet.rank));
       setAlertText(["Do you want to submit this ranking?", text, ""]);
     } else {
@@ -135,10 +135,10 @@ export default function Home() {
   
 
   const submitPost = async () => {
-    var first = "";
-    var second = "";
-    var third = "";
-    var fourth = "";
+    let first = "";
+    let second = "";
+    let third = "";
+    let fourth = "";
 
     petSelection.forEach((pet) => {
       if(pet.rank === 1)
