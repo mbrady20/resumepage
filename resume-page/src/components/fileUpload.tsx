@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import {
   ref,
   uploadBytes,
-  getDownloadURL,
-  StorageReference,
+  getDownloadURL
 } from "firebase/storage";
+import type { StorageReference } from "firebase/storage";
 import { db, storage } from "npm/firebase/clientApp";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@chakra-ui/button";
@@ -30,10 +30,10 @@ export default function FileUpload() {
   };
   const uploadImage = () => {
     if (input == null) return;
-    var tempName = input.name + uuidv4();
+    let tempName = input.name + uuidv4();
     
 
-    var tempRef = (ref(storage, `${tempName}`));
+    let tempRef = (ref(storage, `${tempName}`));
     if (tempRef) {
       uploadBytes(tempRef, input);
     }
@@ -81,6 +81,7 @@ export default function FileUpload() {
               width={200}
               maxHeight={350}
               minHeight={275}
+              alt="test"
             />
           )}
           {!imageDisplayUrl && imageUploaded && (
