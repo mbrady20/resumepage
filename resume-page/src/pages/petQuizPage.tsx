@@ -86,7 +86,7 @@ export default function Home() {
   function setAlertFeatures(e: boolean) {
     if (e) {
       setSubmitReady(true);
-      let text = "";
+      const text = "";
       petSelection.forEach((pet) => text.concat(pet.name + ": " + pet.rank));
       setAlertText(["Do you want to submit this ranking?", text, ""]);
     } else {
@@ -114,10 +114,10 @@ export default function Home() {
   }
 
   function petImageClick(e: PetImage) {
-    let newSelection = [...petSelection];
+     const newSelection = [...petSelection];
     newSelection.forEach((element, index) => {
       if (element.petId === e.petId) {
-        let newElement = {
+        const newElement = {
           petId: element.petId,
           url: element.url,
           name: element.name,
@@ -238,7 +238,7 @@ export default function Home() {
       <Center>
         <SimpleGrid columns={2} gap={20}>
           {petSelection.map((petImage: PetImage) => (
-            <GridItem>
+            <GridItem key={petImage.petId}>
               <button onClick={() => petImageClick(petImage)}>
                 <Image
                   src={petImage.url}

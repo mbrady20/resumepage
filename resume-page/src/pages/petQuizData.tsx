@@ -159,7 +159,7 @@ export default function PetQuizData() {
 
     const rankArray: DisplayRank[] = []
     snapshot.forEach(async (doc) => {
-      let petArray: PetImage[] = []
+      const petArray: PetImage[] = []
 
       const first = doc.data().firstPlacePetId;
       const second = doc.data().secondPlacePetId;
@@ -187,7 +187,7 @@ export default function PetQuizData() {
       petArray.push(thirdDocData);
       petArray.push(fourthDocData);
       
-      let rankData: DisplayRank = {
+      const rankData: DisplayRank = {
         initials: doc.data().initials,
         pets: petArray
       };
