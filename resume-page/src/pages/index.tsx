@@ -57,7 +57,7 @@ export default function Home() {
       return "firstPlaces";
   }
 
-  function randOrderByTwo(): string {
+  function randOrderByTwo() {
     const num: number = Math.random();
     if (num > 0.5)
       return "asc";
@@ -66,7 +66,7 @@ export default function Home() {
   }
   async function getData() {
 
-     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
+     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), "desc")).withConverter(petConverter);
     const snapshot = (await getDocs(q)).docs;
     const array: PetImage[] = [];
     snapshot.forEach((doc) => {
