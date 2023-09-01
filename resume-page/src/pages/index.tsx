@@ -67,7 +67,7 @@ export default function Home() {
   async function getData() {
 
      const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
-    const snapshot = (await getDocs(q).catch()).docs;
+    const snapshot = (await getDocs(q)).docs;
     const array: PetImage[] = [];
     snapshot.forEach((doc) => {
       array.push(doc.data());
