@@ -41,7 +41,7 @@ export default function Home() {
     }
   };
 
-  function randOrderByOne(): string {
+  function randOrderByOne() {
     const num: number = Math.random() * 5;
     if(num > 5)
       return "petId";
@@ -66,7 +66,7 @@ export default function Home() {
   }
   async function getData() {
 
-     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), "desc")).withConverter(petConverter);
+     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
     const snapshot = (await getDocs(q)).docs;
     const array: PetImage[] = [];
     snapshot.forEach((doc) => {

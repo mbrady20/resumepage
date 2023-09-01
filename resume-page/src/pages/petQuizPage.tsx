@@ -63,6 +63,7 @@ export default function Home() {
       snapshot: QueryDocumentSnapshot
     ): Pet {
       const data = snapshot.data();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return {name: data.name, url: data.url, avgWinShare: data.avgWinShare, firstPlaces: data.firstPlaces, roundsPlayed: data.roundsPlayed, petId: data.petId};
     }
   };
