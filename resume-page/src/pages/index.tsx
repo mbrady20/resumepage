@@ -37,6 +37,7 @@ export default function Home() {
       snapshot: QueryDocumentSnapshot
     ): PetImage {
       const data = snapshot.data();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return {name: data.name, url: data.url, rank: 4, petId: data.petId};
     }
   };

@@ -116,6 +116,7 @@ export default function PetQuizData() {
       snapshot: QueryDocumentSnapshot
     ): Rank {
       const data = snapshot.data();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return {initials: data.initials, firstPlacePetId: data.firstPlacePetId, secondPlacePetId: data.secondPlacePetId, thirdPlacePetId: data.thirdPlacePetId, fourthPlacePetId: data.fourthPlacePetId};
     }
   };
@@ -129,6 +130,7 @@ export default function PetQuizData() {
       snapshot: QueryDocumentSnapshot
     ): PetImage {
       const data = snapshot.data();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return {name: data.name, url: data.url, rank: 4, petId: data.petId};
     }
   };
@@ -141,6 +143,7 @@ export default function PetQuizData() {
       snapshot: QueryDocumentSnapshot
     ): Pet {
       const data = snapshot.data();
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return {name: data.name, url: data.url, avgWinShare: data.avgWinShare, firstPlaces: data.firstPlaces, roundsPlayed: data.roundsPlayed, petId: data.petId};
     }
   };
