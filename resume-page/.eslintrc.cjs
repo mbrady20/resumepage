@@ -21,7 +21,7 @@ const config = {
         {
           "checksVoidReturn": false
         }
-      ]
+      ],
     
 
     "@typescript-eslint/consistent-type-imports": [
