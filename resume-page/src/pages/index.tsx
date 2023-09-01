@@ -41,7 +41,7 @@ export default function Home() {
     }
   };
 
-  function randOrderByOne() {
+  function randOrderByOne(): string {
     const num: number = Math.random() * 5;
     if(num > 5)
       return "petId";
@@ -57,7 +57,7 @@ export default function Home() {
       return "firstPlaces";
   }
 
-  function randOrderByTwo() {
+  function randOrderByTwo(): string {
     const num: number = Math.random();
     if (num > 0.5)
       return "asc";
