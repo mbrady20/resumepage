@@ -202,7 +202,7 @@ export default function PetQuizData() {
     const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("firstPlaces", "desc")).withConverter(petDataConverter);
     const snapshot = (await getDocs(pieChartQuery)).docs;
 
-    let array: ChartData[] = [];
+    const array: ChartData[] = [];
     snapshot.forEach((doc) => {
       array.push(
         {
@@ -218,7 +218,7 @@ export default function PetQuizData() {
     const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("avgWinShare", "desc")).withConverter(petDataConverter);
     const snapshot = (await getDocs(pieChartQuery)).docs;
 
-    let array: ChartData[] = [];
+    const array: ChartData[] = [];
     snapshot.forEach((doc) => {
       array.push(
         {name: doc.data().name,
