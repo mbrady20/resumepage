@@ -21,4 +21,15 @@ interface Pet {
     roundsPlayed: number,
     petId: string
 }
-export type {Rank, PetImage, Pet}
+
+interface DisplayRank {
+    initials: string,
+    pets: PetImage[]
+}
+
+interface ChartData {
+    name: string,
+    value: number
+}
+
+export type {Rank, PetImage, Pet, DisplayRank, ChartData}

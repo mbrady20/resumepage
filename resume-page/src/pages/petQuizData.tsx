@@ -23,11 +23,11 @@ import {
   TooltipProps,
   Tr,
 } from "@chakra-ui/react";
-import { DocumentData, QueryDocumentSnapshot, collection, limit, query } from "firebase/firestore";
+import { DocumentData, QueryDocumentSnapshot, collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import router from "next/router";
+import FileUpload from "npm/components/fileUpload";
 import { db } from "npm/firebase/clientApp";
-import { Rank } from "npm/interfaces/answer.interface";
-import { answerState } from "npm/states/selection_state";
+import { ChartData, DisplayRank, Pet, PetImage, Rank } from "npm/interfaces/answer.interface";
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import {
@@ -48,143 +48,13 @@ import { Props } from "recharts/types/container/Surface";
 import { useRecoilState } from "recoil";
 
 export default function PetQuizData() {
-  const [viewMode1, setViewMode1] = useState(true);
-  const [viewMode2, setViewMode2] = useState(true);
+  const [viewMode1, setViewMode1] = useState(false);
+  const [viewMode2, setViewMode2] = useState(false);
 
-  const [sydRank, setSydRank] = useState(0);
-  const [lokRank, setLokRank] = useState(0);
-  const [stuRank, setStuRank] = useState(0);
-  const [elRank, setElRank] = useState(0);
-  const [sydRankOne, setSydRankOne] = useState(0);
-  const [lokRankOne, setLokRankOne] = useState(0);
-  const [stuRankOne, setStuRankOne] = useState(0);
-  const [elRankOne, setElRankOne] = useState(0);
-  const [totCount, setTotCount] = useState(0);
-  const [sydPSum, setSydPsum] = useState(0);
-  const [lokPSum, setLokPsum] = useState(0);
-  const [stuPSum, setStuPsum] = useState(0);
-  const [elPSum, setElPsum] = useState(0);
+  const [recentResults, setRecentResults] = useState<DisplayRank[]>();
+  const [pieChartData, setPieChartData] = useState<ChartData[]>();
+  const [barChartData, setBarChartData] = useState<ChartData[]>();
 
-  let sydCount = 0;
-  let lokCount = 0;
-  let stuCount = 0;
-  let elCount = 0;
-  let count = 0;
-
-  let sydOneCount = 0;
-  let lokOneCount = 0;
-  let stuOneCount = 0;
-  let elOneCount = 0;
-
-  let sydAvNum = 0;
-  let lokAvNum = 0;
-  let stuAvNum = 0;
-  let elAvNum = 0;
-/*   useEffect(() => {
-    data?.forEach(
-      (element: {
-        sydneyRank: number;
-        lokiRank: number;
-        stuartRank: number;
-        elGatoRank: number;
-      }) => {
-        count = count + 1;
-        sydCount = 5 - element.sydneyRank + sydCount;
-        lokCount = 5 - element.lokiRank + lokCount;
-        stuCount = 5 - element.stuartRank + stuCount;
-        elCount = 5 - element.elGatoRank + elCount;
-
-        sydAvNum += element.sydneyRank;
-        lokAvNum += element.lokiRank;
-        stuAvNum += element.stuartRank;
-        elAvNum += element.elGatoRank;
-
-        if (element.sydneyRank.valueOf() == 1) ++sydOneCount;
-        if (element.lokiRank.valueOf() == 1) ++lokOneCount;
-        if (element.stuartRank.valueOf() == 1) ++stuOneCount;
-        if (element.elGatoRank.valueOf() == 1) ++elOneCount;
-      }
-    );
-
-    setSydRank(sydCount);
-    setLokRank(lokCount);
-    setStuRank(stuCount);
-    setElRank(elCount);
-    setSydRankOne(sydOneCount);
-    setLokRankOne(lokOneCount);
-    setStuRankOne(stuOneCount);
-    setElRankOne(elOneCount);
-    setTotCount(count);
-
-    setSydPsum(sydAvNum);
-    setStuPsum(stuAvNum);
-    setLokPsum(lokAvNum);
-    setElPsum(elAvNum);
-  }, [data]); */
-
-  const barChartData = [
-    {
-      name: "Sydney",
-      total: (sydRank / (totCount * 4)) * 100,
-    },
-    {
-      name: "Loki",
-      total: (lokRank / (totCount * 4)) * 100,
-    },
-    {
-      name: "Stuart",
-      total: (stuRank / (totCount * 4)) * 100,
-    },
-    {
-      name: "El Gato",
-      total: (elRank / (totCount * 4)) * 100,
-    },
-  ];
-
-  const pieChartData = [
-    {
-      name: "Sydney",
-      value: (sydRankOne / totCount) * 100,
-    },
-    {
-      name: "Loki",
-      value: (lokRankOne / totCount) * 100,
-    },
-    {
-      name: "Stuart",
-      value: (stuRankOne / totCount) * 100,
-    },
-    {
-      name: "El Gato",
-      value: (elRankOne / totCount) * 100,
-    },
-  ];
-
-  
-
-
-  const averageResultImages = [
-    {
-      index: sydPSum / totCount,
-      value: "/sydney2.png",
-      name: "Sydney",
-    },
-    {
-      index: lokPSum / totCount,
-      value: "/loki.jpeg",
-      name: "Loki",
-    },
-    {
-      index: stuPSum / totCount,
-      value: "/stuart.png",
-      name: "Stuart",
-    },
-    {
-      index: elPSum / totCount,
-      value: "/elgato.png",
-      name: "El Gato",
-    },
-  ];
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -237,6 +107,7 @@ export default function PetQuizData() {
     setViewMode1(true);
     setViewMode2(true);
   }
+
   const rankConverter = {
     toFirestore(rank: Rank): DocumentData {
       return {initials: rank.initials, firstPlacePetId: rank.firstPlacePetId, secondPlacePetId: rank.secondPlacePetId, thirdPlacePetId: rank.thirdPlacePetId, fourthPlacePetId: rank.fourthPlacePetId};
@@ -249,8 +120,113 @@ export default function PetQuizData() {
     }
   };
 
-  async function getData() {
-    const q = query(collection(db, "ranks"), limit(10));
+
+  const petConverter = {
+    toFirestore(pet: PetImage): DocumentData {
+      return {name: pet.name, url: pet.url, avgWinShare: 0, firstPlaces: 0};
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot
+    ): PetImage {
+      const data = snapshot.data();
+      return {name: data.name, url: data.url, rank: 4, petId: data.petId};
+    }
+  };
+
+  const petDataConverter = {
+    toFirestore(pet: Pet): DocumentData {
+      return {name: pet.name, url: pet.url, avgWinShare: 0, firstPlaces: 0};
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot
+    ): Pet {
+      const data = snapshot.data();
+      return {name: data.name, url: data.url, avgWinShare: data.avgWinShare, firstPlaces: data.firstPlaces, roundsPlayed: data.roundsPlayed, petId: data.petId};
+    }
+  };
+
+  useEffect(() => {
+    getRecentResultsData();
+    getPieChartData();
+    getBarChartData();
+  }, [])
+  
+  async function getRecentResultsData() {
+    const q = query(collection(db, "ranks"), limit(5)).withConverter(rankConverter);
+
+
+    var snapshot = (await getDocs(q)).docs;
+
+    const rankArray: DisplayRank[] = []
+    snapshot.forEach(async (doc) => {
+      var  petArray: PetImage[] = []
+
+      var first = doc.data().firstPlacePetId;
+      var second = doc.data().secondPlacePetId;
+      var third = doc.data().thirdPlacePetId;
+      var fourth = doc.data().fourthPlacePetId;
+
+      const firstQuery = query(collection(db, "pets"), where("petId", "==", first), limit(1)).withConverter(petConverter);
+      const firstDoc = (await getDocs(firstQuery)).docs[0]
+      const firstDocData = firstDoc!.data();
+
+      const secondQuery = query(collection(db, "pets"), where("petId", "==", second), limit(1)).withConverter(petConverter);
+      const secondDoc = (await getDocs(secondQuery)).docs[0]
+      const secondDocData = secondDoc!.data();
+  
+      const thirdQuery = query(collection(db, "pets"), where("petId", "==", third), limit(1)).withConverter(petConverter);
+      const thirdDoc = (await getDocs(thirdQuery)).docs[0]
+      const thirdDocData = thirdDoc!.data();
+    
+      const fourthQuery = query(collection(db, "pets"), where("petId", "==", fourth), limit(1)).withConverter(petConverter);
+      const fourthDoc = (await getDocs(fourthQuery)).docs[0]
+      const fourthDocData = fourthDoc!.data();
+
+      petArray.push(firstDocData);
+      petArray.push(secondDocData);
+      petArray.push(thirdDocData);
+      petArray.push(fourthDocData);
+      
+      var rankData: DisplayRank = {
+        initials: doc.data().initials,
+        pets: petArray
+      };
+
+      rankArray.push(rankData);
+     } )
+  
+    setRecentResults(rankArray);
+  }
+
+  async function getPieChartData() {
+    const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("firstPlaces", "desc")).withConverter(petDataConverter);
+    var snapshot = (await getDocs(pieChartQuery)).docs;
+
+    var array: ChartData[] = [];
+    snapshot.forEach((doc) => {
+      array.push(
+        {
+          name: doc.data().name,
+          value: doc.data().firstPlaces
+        }
+      );
+    })
+    setPieChartData(array);
+  }
+
+  async function getBarChartData() {
+    const pieChartQuery = query(collection(db, "pets"), limit(10), orderBy("avgWinShare", "desc")).withConverter(petDataConverter);
+    var snapshot = (await getDocs(pieChartQuery)).docs;
+
+    var array: ChartData[] = [];
+    snapshot.forEach((doc) => {
+      array.push(
+        {name: doc.data().name,
+          value: doc.data().avgWinShare * 100
+        }
+      );
+    })
+    setBarChartData(array);
   }
 
   return (
@@ -273,23 +249,23 @@ export default function PetQuizData() {
           <Box paddingY={"50px"}>
             <Button
               width={"100%"}
+              bg="green.100"
+              borderRadius="50px"
+              _hover={{ bg: "green.200" }}
+              onClick={resultsButtonClick}
+            >
+              Create a Pet
+            </Button>
+          </Box>
+          <Box paddingY={"50px"}>
+            <Button
+              width={"100%"}
               bg="purple.100"
               borderRadius={"50px"}
               _hover={{ bg: "purple.200" }}
               onClick={recentButtonClick}
             >
               Recent Responses
-            </Button>
-          </Box>
-          <Box paddingY={"50px"}>
-            <Button
-              width={"100%"}
-              bg="green.100"
-              borderRadius="50px"
-              _hover={{ bg: "green.200" }}
-              onClick={resultsButtonClick}
-            >
-              My Results
             </Button>
           </Box>
           <Box paddingY={"50px"}>
@@ -316,57 +292,14 @@ export default function PetQuizData() {
           </Box>
         </Container>
       </GridItem>
-      {!viewMode1 && !viewMode2 && (
+       {!viewMode1 && !viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="green.50">
           <Center>
-            <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>
-              Your Ranking!
-            </Text>
-          </Center>
-          <SimpleGrid columns={4} paddingLeft={"80px"}>
-            {userResultImages
-              .sort((a, b) => a.index - b.index)
-              .map((element) => (
-                <GridItem key={element.index} height={"100%"} width={"50%"}>
-                  <Image
-                    src={element.value}
-                    width={"100%"}
-                    height={"100%"}
-                    alt="Sydney"
-                  ></Image>
-                  <Text>
-                    {element.name}: {element.index}
-                  </Text>
-                </GridItem>
-              ))}
-          </SimpleGrid>
-          <Center>
-            <Text height={"10vh"} paddingTop={"30px"} as="b" fontSize={"3xl"}>
-              Average Ranking!
-            </Text>
-          </Center>
-          (
-            <SimpleGrid columns={4} paddingLeft={"80px"} paddingTop={"20px"}>
-              {averageResultImages
-                ?.sort((a, b) => a.index - b.index)
-                .map((element) => (
-                  <GridItem key={element.index} height={"100%"} width={"50%"}>
-                    <Image
-                      src={element.value}
-                      width={"100%"}
-                      height={"100%"}
-                      alt="Sydney"
-                    ></Image>
-                    <Text>
-                      {element.name}: {Math.round(element.index * 100) / 100}
-                    </Text>
-                  </GridItem>
-                ))}
-            </SimpleGrid>
-          )
+            <FileUpload/>
+            </Center>
         </GridItem>
       )}
-      {viewMode1 && !viewMode2 && (
+        {viewMode1 && !viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="red.50">
           <Center>
             <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>
@@ -390,12 +323,12 @@ export default function PetQuizData() {
                   axisLine={false}
                   tickFormatter={(value) => `%${value}`}
                 />
-                <Bar dataKey="total" fill="#528aae" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#528aae" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Container>
         </GridItem>
-      )}
+      )} 
 
       {!viewMode1 && viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="yellow.50">
@@ -416,7 +349,7 @@ export default function PetQuizData() {
                   label={renderCustomizedLabel}
                   labelLine={false}
                 >
-                  {pieChartData.map((entry, index) => (
+                  {pieChartData!.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -427,8 +360,7 @@ export default function PetQuizData() {
             </ResponsiveContainer>
           </Container>
         </GridItem>
-      )}
-{/* 
+      )} 
       {!!viewMode1 && !!viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="purple.50">
           <Center>
@@ -441,27 +373,33 @@ export default function PetQuizData() {
               <Thead>
                 <Tr>
                   <Th>Initials</Th>
-                  <Th>Sydney Rank</Th>
-                  <Th>Loki Rank</Th>
-                  <Th>Stuart Rank</Th>
-                  <Th>El Gato Rank</Th>
+                  <Th>First</Th>
+                  <Th>Second</Th>
+                  <Th>Third</Th>
+                  <Th>Fourth</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {data2?.map((element ) => (
-                  <Tr key={element.id}>
+                {recentResults?.map((element) => (
+                  <Tr key={element.initials}>
                     <Td>{element.initials}</Td>
-                    <Td>{element.sydneyRank}</Td>
-                    <Td>{element.lokiRank}</Td>
-                    <Td>{element.stuartRank}</Td>
-                    <Td>{element.elGatoRank}</Td>
+                    <Td>
+                    <Image src={element.pets.at(0)?.url} height={20}/>
+                      {element.pets.at(0)!.name}
+                    </Td>
+                    <Td>
+                    <Image src={element.pets.at(1)?.url} height={20}/>
+                      {element.pets.at(1)!.name}</Td>
+                    <Td><Image src={element.pets.at(2)?.url} height={20}/>{element.pets.at(2)!.name}</Td>
+                    <Td><Image src={element.pets.at(3)?.url} height={20}/>
+                      {element.pets.at(3)!.name}</Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
         </GridItem>
-      )} */}
+      )} 
     </Grid>
   );
 }

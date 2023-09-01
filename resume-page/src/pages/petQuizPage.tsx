@@ -45,10 +45,7 @@ export default function Home() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  function delay(time: number | undefined) {
-    return new Promise(resolve => setTimeout(resolve, time));
-  }
-
+  const buttonRef = useRef<HTMLButtonElement>(null);
   
   useEffect(() => {
     validityCheck();
@@ -135,7 +132,9 @@ export default function Home() {
     petSelection.forEach((pet) => console.log(pet.rank));
   }
 
-  async function submitPost() {
+  
+
+  const submitPost = async () => {
     var first = "";
     var second = "";
     var third = "";
@@ -151,7 +150,7 @@ export default function Home() {
       else if(pet.rank === 4)
         fourth = pet.petId;
     })
-    
+  
     const docRef = await addDoc(collection(db, "ranks"), {
       initials: input,
       firstPlacePetId: first,
@@ -202,13 +201,19 @@ export default function Home() {
       avgWinShare: avgWinShareCalc(2, fourthDocData.roundsPlayed, fourthDocData.avgWinShare)
     })
 
+
+    
     router.push("/petQuizData");
+
     setIsSubmitted(true);
+
   }
 
   function avgWinShareCalc(place: number, gamesPlayedPrev: number, prevWinShare: number) {
     return (((prevWinShare * gamesPlayedPrev) + 5 - place) / (gamesPlayedPrev + 1))/4;
   }
+
+
 
   return (
     <Container minWidth={"90vw"}>
@@ -238,6 +243,8 @@ export default function Home() {
                 <Image
                   src={petImage.url}
                   width={200}
+                  maxHeight={350}
+                  minHeight={275}
                   alt={petImage.name}
                 ></Image>
               </button>
@@ -294,12 +301,8 @@ export default function Home() {
         </SimpleGrid>
       </Center>
       <Center>
-        {!isSubmitted && <Button onClick={submitButton}>Submit!</Button>}
-        {!!isSubmitted && (
-          <Button onClick={() => router.push("petQuizData")}>
-            View Results!
-          </Button>
-        )}
+        { <Button onClick={submitButton}>Submit!</Button>}
+  
       </Center>
       <AlertDialog
         isOpen={isOpen}
@@ -323,7 +326,6 @@ export default function Home() {
                     onChange={(e) => {
                       setInput(e.target.value.toLocaleUpperCase());
                     }}
-                    isInvalid={validInit}
                   ></Input>
                 </FormControl>
               )}
