@@ -30,10 +30,10 @@ export default function FileUpload() {
   };
   const uploadImage = () => {
     if (input == null) return;
-    let tempName = input.name + uuidv4();
+    const tempName = input.name + uuidv4();
     
 
-    let tempRef = (ref(storage, `${tempName}`));
+    const tempRef = (ref(storage, `${tempName}`));
     if (tempRef) {
       uploadBytes(tempRef, input);
     }

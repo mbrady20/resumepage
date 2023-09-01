@@ -10,13 +10,13 @@ import {
   Center,
   Spacer,
 } from "@chakra-ui/react";
-import { DocumentData, QueryDocumentSnapshot, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import type { DocumentData, QueryDocumentSnapshot} from "firebase/firestore";
 import Head from "next/head";
 
 import { useRouter } from "next/router";
 import { db } from "npm/firebase/clientApp";
-import {  PetImage } from "npm/interfaces/answer.interface";
+import type {  PetImage } from "npm/interfaces/answer.interface";
 import { petVoteState } from "npm/states/selection_state";
 import { useEffect } from "react";
 
@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   function randOrderByOne() {
-    const num = Math.random() * 5;
+    const num: number = Math.random() * 5;
     if(num > 5)
       return "petId";
     if(num > 4)
@@ -58,7 +58,7 @@ export default function Home() {
   }
 
   function randOrderByTwo() {
-    const num = Math.random();
+    const num: number = Math.random();
     if (num > 0.5)
       return "asc";
     else
@@ -67,7 +67,7 @@ export default function Home() {
   async function getData() {
 
      const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
-    var snapshot = (await getDocs(q)).docs;
+    const snapshot = (await getDocs(q)).docs;
     const array: PetImage[] = [];
     snapshot.forEach((doc) => {
       array.push(doc.data());
@@ -77,7 +77,6 @@ export default function Home() {
     setPetSelection(array);
    }
 
-var petSelectionArray: PetImage[];
 useEffect(() => {
 
 getData();
