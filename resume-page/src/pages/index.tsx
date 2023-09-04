@@ -26,6 +26,7 @@ export default function Home() {
   const router = useRouter();
 
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const[petSelection, setPetSelection] = useRecoilState<PetImage[]>(petVoteState);
 
 

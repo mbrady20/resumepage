@@ -129,13 +129,13 @@ export default function Home() {
       }
     });
     setPetSelection(newSelection);
-
-    petSelection.forEach((pet) => console.log(pet.rank));
   }
 
   
 
   const submitPost = async () => {
+    const button = document.getElementById("submit")
+    disablebutton();
     let first = "";
     let second = "";
     let third = "";
@@ -209,6 +209,11 @@ export default function Home() {
     setIsSubmitted(true);
 
   }
+
+  function disablebutton(){
+    const btn = document.getElementById("submit") as HTMLButtonElement | null;
+    btn!.disabled = true;
+}
 
   function avgWinShareCalc(place: number, gamesPlayedPrev: number, prevWinShare: number) {
     return (((prevWinShare * gamesPlayedPrev) + 5 - place) / (gamesPlayedPrev + 1))/4;
@@ -327,7 +332,7 @@ export default function Home() {
                     onChange={(e) => {
                       setInput(e.target.value.toLocaleUpperCase());
                     }}
-                  ></Input>
+                  />
                 </FormControl>
               )}
             </AlertDialogBody>
@@ -341,6 +346,7 @@ export default function Home() {
                     colorScheme="telegram"
                     onClick={submitPost}
                     isDisabled={!validInit && !isSubmitted}
+                    id="submit"
                   >
                     Submit!
                   </Button>

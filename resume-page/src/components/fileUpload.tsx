@@ -5,12 +5,13 @@ import {
   getDownloadURL
 } from "firebase/storage";
 import type { StorageReference } from "firebase/storage";
-import { db, storage } from "npm/firebase/clientApp";
+import { auth, db, storage } from "npm/firebase/clientApp";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@chakra-ui/button";
 import { Container, Input, Image, Center, Text, IconButton } from "@chakra-ui/react";
 import { addDoc, collection } from "firebase/firestore";
 import { CloseIcon } from "@chakra-ui/icons";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 export default function FileUpload() {
@@ -22,6 +23,7 @@ export default function FileUpload() {
   const [imageUploaded, setImageUploaded] = useState(false);
   const [textInputVal, setTextInputVal] = useState("");
   const [imagePreviewed, setImagePreviewed] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const onInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -58,7 +60,8 @@ export default function FileUpload() {
       avgWinShare: 0,
       firstPlaces: 0,
       petId: uuidv4(),
-      roundsPlayed: 0
+      roundsPlayed: 0,
+      userId: userId
     });
   };
 
@@ -66,12 +69,26 @@ export default function FileUpload() {
     setImageDisplayUrl("");
     setImagePreviewed(false);
   }
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    const uid = user.uid;
+    setUserId(uid);
+    // ...
+  } else {
+    // User is signed out
+    // ...
+  }
+});
+
+
   return (
     <Container>
         <Center>
       <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>Add your pet to the quiz!</Text>
       </Center>
-<Container bg="gray.100" height="50vh" >
+<Container bg="gray.100" height="50vh" rounded="md">
    {imagePreviewed && <IconButton aria-label={""} bg="red.300" icon={<CloseIcon/>} onClick={closeButton}></IconButton>}
         <Container bg="gray.100" height="45vh" centerContent justifyContent={"center"}>
      

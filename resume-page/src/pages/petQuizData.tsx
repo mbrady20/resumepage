@@ -23,11 +23,14 @@ import {
   TooltipProps,
   Tr,
 } from "@chakra-ui/react";
+import { onAuthStateChanged } from "firebase/auth";
 import { DocumentData, QueryDocumentSnapshot, collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import router from "next/router";
+import SignIn from "npm/components/auth/signIn";
+import SignInOrUp from "npm/components/auth/signInOrUp";
 import FileUpload from "npm/components/fileUpload";
-import { db } from "npm/firebase/clientApp";
-import { ChartData, DisplayRank, Pet, PetImage, Rank } from "npm/interfaces/answer.interface";
+import { auth, db } from "npm/firebase/clientApp";
+import type { ChartData, DisplayRank, Pet, PetImage, Rank } from "npm/interfaces/answer.interface";
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import {
@@ -54,6 +57,8 @@ export default function PetQuizData() {
   const [recentResults, setRecentResults] = useState<DisplayRank[]>();
   const [pieChartData, setPieChartData] = useState<ChartData[]>();
   const [barChartData, setBarChartData] = useState<ChartData[]>();
+  const [signedIn, setSignedIn] = useState(false);
+  const [userPet, setUserPet] = useState<Pet | null>();
 
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -155,7 +160,7 @@ export default function PetQuizData() {
   }, [])
   
   async function getRecentResultsData() {
-    const q = query(collection(db, "ranks"), limit(5)).withConverter(rankConverter);
+    const q = query(collection(db, "ranks"), limit(4)).withConverter(rankConverter);
 
 
     const snapshot = (await getDocs(q)).docs;
@@ -232,6 +237,21 @@ export default function PetQuizData() {
     setBarChartData(array);
   }
 
+
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/auth.user
+    const uid = user.uid;
+    setSignedIn(true);
+    // ...
+  } else {
+    // User is signed out
+    setSignedIn(false);
+    setUserPet(null);
+  }
+});
+
   return (
     <Grid
       templateRows="repeat(1, 1fr)"
@@ -298,7 +318,8 @@ export default function PetQuizData() {
        {!viewMode1 && !viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="green.50">
           <Center>
-            <FileUpload/>
+            {!signedIn && <SignInOrUp/>}
+            {!!signedIn && <FileUpload/>}
             </Center>
         </GridItem>
       )}
@@ -387,7 +408,7 @@ export default function PetQuizData() {
                   <Tr key={element.initials}>
                     <Td>{element.initials}</Td>
                     <Td>
-                    <Image src={element.pets.at(0)?.url} height={20}/>
+                    <Image src={element.pets.at(0)?.url} height={20} alt="first"/>
                       {element.pets.at(0)!.name}
                     </Td>
                     <Td>
