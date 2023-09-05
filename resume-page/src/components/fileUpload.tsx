@@ -92,8 +92,7 @@ export default function FileUpload(props: { userId: string; }) {
             <Image
               src={imageDisplayUrl}
               width={200}
-              maxHeight={350}
-              minHeight={275}
+              height={275}
               alt="test"
             />
           )}
