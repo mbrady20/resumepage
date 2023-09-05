@@ -95,7 +95,7 @@ export default function RecentResultsPage() {
     <div>
       <Center>
         <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>
-          Ten most recent pet quiz results
+          Recent pet quiz results
         </Text>
       </Center>
       {loading ? (
