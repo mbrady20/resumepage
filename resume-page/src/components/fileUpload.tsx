@@ -14,7 +14,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { onAuthStateChanged } from "firebase/auth";
 
 
-export default function FileUpload() {
+export default function FileUpload(props: { userId: string; }) {
   const [input, setInput] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string | null>();
   const [imageDisplayUrl, setImageDisplayUrl] = useState<string | null>();
@@ -23,7 +23,6 @@ export default function FileUpload() {
   const [imageUploaded, setImageUploaded] = useState(false);
   const [textInputVal, setTextInputVal] = useState("");
   const [imagePreviewed, setImagePreviewed] = useState(false);
-  const [userId, setUserId] = useState("");
 
   const onInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -61,7 +60,7 @@ export default function FileUpload() {
       firstPlaces: 0,
       petId: uuidv4(),
       roundsPlayed: 0,
-      userId: userId
+      userId: props.userId
     });
   };
 
@@ -70,17 +69,7 @@ export default function FileUpload() {
     setImagePreviewed(false);
   }
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    const uid = user.uid;
-    setUserId(uid);
-    // ...
-  } else {
-    // User is signed out
-    // ...
-  }
-});
+
 
 
   return (

@@ -4,12 +4,13 @@ import RootLayout from './layout';
 import type { AppProps, AppType } from 'next/app';
 
 import { RecoilRoot } from 'recoil';
+import DataLayout from './layout-data';
 
 const MyApp: AppType = ({Component, pageProps, ...appProps}: AppProps) => {
 
   const getContent = () => {
-    if([`/petQuizData`, `/sign-in`, `/sign-up`].includes(appProps.router.pathname))
-      return <Component {...pageProps}/>;
+    if([`/barChartPage`, `/recentResultsPage`, `/pieChartPage`, `/createAPetPage`].includes(appProps.router.pathname))
+      return <DataLayout><Component {...pageProps}/></DataLayout>;
 
       return(
       <RootLayout>

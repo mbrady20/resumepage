@@ -59,7 +59,7 @@ export default function PetQuizData() {
   const [barChartData, setBarChartData] = useState<ChartData[]>();
   const [signedIn, setSignedIn] = useState(false);
   const [userPet, setUserPet] = useState<Pet | null>();
-
+  const [userId, setUserId] = useState<string>("");
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -238,19 +238,7 @@ export default function PetQuizData() {
   }
 
 
-  onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    const uid = user.uid;
-    setSignedIn(true);
-    // ...
-  } else {
-    // User is signed out
-    setSignedIn(false);
-    setUserPet(null);
-  }
-});
+
 
   return (
     <Grid
@@ -319,70 +307,19 @@ export default function PetQuizData() {
         <GridItem colSpan={9} height={"100vh"} bg="green.50">
           <Center>
             {!signedIn && <SignInOrUp/>}
-            {!!signedIn && <FileUpload/>}
+            {!!signedIn && <FileUpload userId={userId}/>}
             </Center>
         </GridItem>
       )}
         {viewMode1 && !viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="red.50">
-          <Center>
-            <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>
-              Percentage of vote share for each pet
-            </Text>
-          </Center>
-          <Container height={"90vh"} minWidth={"80vw"}>
-            <ResponsiveContainer>
-              <BarChart data={barChartData}>
-                <XAxis
-                  dataKey="name"
-                  stroke="#00000"
-                  fontSize={20}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#00000"
-                  fontSize={14}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `%${value}`}
-                />
-                <Bar dataKey="value" fill="#528aae" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </Container>
+      
         </GridItem>
       )} 
 
       {!viewMode1 && viewMode2 && (
         <GridItem colSpan={9} height={"100vh"} bg="yellow.50">
-          <Center>
-            <Text height={"10vh"} paddingTop={"10px"} as="b" fontSize={"3xl"}>
-              Percentage of voters who voted each pet the cutest
-            </Text>
-          </Center>
-          <Container height={"90vh"} minWidth={"80vw"}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart width={400} height={400}>
-                <Pie
-                  data={pieChartData}
-                  dataKey="value"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={350}
-                  label={renderCustomizedLabel}
-                  labelLine={false}
-                >
-                  {pieChartData!.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </Container>
+   
         </GridItem>
       )} 
       {!!viewMode1 && !!viewMode2 && (
