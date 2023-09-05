@@ -17,7 +17,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { db } from "npm/firebase/clientApp";
 import type {  PetImage } from "npm/interfaces/answer.interface";
-import { petVoteState } from "npm/states/selection_state";
 import { useEffect } from "react";
 
 import { useRecoilState } from "recoil";
@@ -26,63 +25,7 @@ export default function Home() {
   const router = useRouter();
 
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const[petSelection, setPetSelection] = useRecoilState<PetImage[]>(petVoteState);
 
-
-  const petConverter = {
-    toFirestore(pet: PetImage): DocumentData {
-      return {name: pet.name, url: pet.url, avgWinShare: 0, firstPlaces: 0};
-    },
-    fromFirestore(
-      snapshot: QueryDocumentSnapshot
-    ): PetImage {
-      const data = snapshot.data();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return {name: data.name, url: data.url, rank: 4, petId: data.petId};
-    }
-  };
-
-  function randOrderByOne() {
-    const num: number = Math.random() * 5;
-    if(num > 5)
-      return "petId";
-    if(num > 4)
-      return "name";
-    if (num > 3)
-      return "avgWinShare";
-    if(num > 2)
-      return "roundsPlayed";
-    if(num > 1)
-      return "url";
-    else
-      return "firstPlaces";
-  }
-
-  function randOrderByTwo() {
-    const num: number = Math.random();
-    if (num > 0.5)
-      return "asc";
-    else
-      return "desc";
-  }
-  async function getData() {
-
-     const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
-    const snapshot = (await getDocs(q)).docs;
-    const array: PetImage[] = [];
-    snapshot.forEach((doc) => {
-      array.push(doc.data());
-    }
-    )
-
-    setPetSelection(array);
-   }
-
-useEffect(() => {
-
-getData();
-}, [])
 
   return (
 
@@ -106,7 +49,7 @@ getData();
             I am a rising Junior at UW Madison majoring in Computer Science,
             Math and Philosophy. I have experience in Java and Javascript
           </Text>
-          <Container paddingY="50px">
+          <Container paddingY="40px">
             <Center>
               <Button bg="blue.800" color="white" onClick={() => router.push("/aboutPage")}>
                 More about me &rarr;
@@ -114,13 +57,20 @@ getData();
             </Center>
             <Container >
             <Center paddingTop={"25px"}>
-          {/*    {!isSubmitted && <Text>Take the Pet Quiz!</Text>}
-             {isSubmitted && <Text>Sure you don&apos;t want to take another look at your results?</Text>}
-              </Center>
-              <Center paddingTop={"20px"}>
-              {!isSubmitted && <Button colorScheme={"green"} onClick={() => router.push("/petQuizPage")}>Pet Quiz!</Button>}
-              {isSubmitted && <Button colorScheme={"green"} onClick={() => router.push("/petQuizData")}>View Results</Button>} */}
+              <Text color="green.500">
+              Check out the Pet Quiz to rank pets! 
+              </Text>
 
+            </Center>
+            <Center>
+              <Text color="green.500">
+            Or upload a picture of your pet to see how they stack up!
+            </Text>
+            </Center>
+            <Center paddingTop={"10px"}>
+              <Button colorScheme="green" onClick={() => router.push("/petQuizPage")}>
+                Take the Pet Quiz!
+              </Button>
             </Center>
             </Container>
           </Container>

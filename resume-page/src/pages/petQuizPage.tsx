@@ -27,15 +27,13 @@ import { Pet, PetImage } from "npm/interfaces/answer.interface";
 import { FirebaseApp } from "firebase/app";
 import { Image, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { petVoteState, submittedState } from "npm/states/selection_state";
-import { useRecoilState } from "recoil";
-import { DocumentData, QueryDocumentSnapshot, addDoc, collection, doc, getDoc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
+
+import { DocumentData, QueryDocumentSnapshot, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore";
 
 export default function Home() {
   const [petSelection, setPetSelection] =
-    useRecoilState<PetImage[]>(petVoteState);
+    useState<PetImage[]>([]);
 
-  const [isSubmitted, setIsSubmitted] = useRecoilState(submittedState);
   const [submitReady, setSubmitReady] = useState(false);
   const [alertText, setAlertText] = useState<string[]>(["", "", ""]);
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -131,6 +129,60 @@ export default function Home() {
     setPetSelection(newSelection);
   }
 
+    const petConverter = {
+      toFirestore(pet: PetImage): DocumentData {
+        return {name: pet.name, url: pet.url, avgWinShare: 0, firstPlaces: 0};
+      },
+      fromFirestore(
+        snapshot: QueryDocumentSnapshot
+      ): PetImage {
+        const data = snapshot.data();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        return {name: data.name, url: data.url, rank: 4, petId: data.petId};
+      }
+    };
+  
+    function randOrderByOne() {
+      const num: number = Math.random() * 5;
+      if(num > 5)
+        return "petId";
+      if(num > 4)
+        return "name";
+      if (num > 3)
+        return "avgWinShare";
+      if(num > 2)
+        return "roundsPlayed";
+      if(num > 1)
+        return "url";
+      else
+        return "firstPlaces";
+    }
+  
+    function randOrderByTwo() {
+      const num: number = Math.random();
+      if (num > 0.5)
+        return "asc";
+      else
+        return "desc";
+    }
+    async function getData() {
+  
+       const q =  query(collection(db, "pets"), limit(4), orderBy(randOrderByOne(), randOrderByTwo())).withConverter(petConverter);
+      const snapshot = (await getDocs(q)).docs;
+      const array: PetImage[] = [];
+      snapshot.forEach((doc) => {
+        array.push(doc.data());
+      }
+      )
+  
+      setPetSelection(array);
+     }
+  
+  useEffect(() => {
+  
+  getData();
+  }, [])
+
   
 
   const submitPost = async () => {
@@ -205,8 +257,6 @@ export default function Home() {
 
     
     router.push("/createAPetPage");
-
-    setIsSubmitted(true);
 
   }
 
@@ -345,7 +395,7 @@ export default function Home() {
                   <Button
                     colorScheme="telegram"
                     onClick={submitPost}
-                    isDisabled={!validInit && !isSubmitted}
+                    isDisabled={!validInit}
                     id="submit"
                   >
                     Submit!
