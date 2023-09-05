@@ -64,7 +64,7 @@ export default function Home() {
             </Center>
             <Center>
               <Text color="green.500">
-            Or upload a picture of your pet to see how they stack up!
+            After you done try uploading a picture of your pet to see how they stack up!
             </Text>
             </Center>
             <Center paddingTop={"10px"}>
