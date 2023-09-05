@@ -204,7 +204,7 @@ export default function Home() {
 
 
     
-    router.push("/petQuizData");
+    router.push("/createAPetPage");
 
     setIsSubmitted(true);
 

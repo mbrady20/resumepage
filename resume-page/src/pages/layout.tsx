@@ -149,7 +149,7 @@ export default function RootLayout({
             <Button
               bg="transparent"
               borderRadius="0"
-              onClick={() => router.push("/recentResultsPage")}
+              onClick={() => router.push("/petQuizPage")}
             >
               Pet Quiz
             </Button>
