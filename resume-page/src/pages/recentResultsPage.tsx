@@ -86,7 +86,7 @@ export default function RecentResultsPage(){
   },[])
     
     if(recentResults.length <= 0){
-   
+        console.log(recentResults)
         return(
             <div>
             <Button onClick={getRecentResultsData}></Button>
@@ -94,6 +94,7 @@ export default function RecentResultsPage(){
             </div>
         )
     }
+    
     return(
         <div>
         <Center>
@@ -113,18 +114,18 @@ export default function RecentResultsPage(){
             </Tr>
           </Thead>
           <Tbody>
-            {recentResults.map((element) => (
+            {recentResults?.map((element) => (
               <Tr key={element.initials}>
                 <Td>{element.initials}</Td>
                 <Td>
-                <Image src={element.pets.at(0)?.url} height={20} alt="first"/>
+                <Image src={element.pets.at(0)!.url} height={20} alt="first"/>
                   {element.pets.at(0)!.name}
                 </Td>
                 <Td>
-                <Image src={element.pets.at(1)?.url} height={20}/>
+                <Image src={element.pets.at(1)!.url} height={20}/>
                   {element.pets.at(1)!.name}</Td>
-                <Td><Image src={element.pets.at(2)?.url} height={20}/>{element.pets.at(2)!.name}</Td>
-                <Td><Image src={element.pets.at(3)?.url} height={20}/>
+                <Td><Image src={element.pets.at(2)!.url} height={20}/>{element.pets.at(2)!.name}</Td>
+                <Td><Image src={element.pets.at(3)!.url} height={20}/>
                   {element.pets.at(3)!.name}</Td>
               </Tr>
             ))}
