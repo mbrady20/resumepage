@@ -299,8 +299,7 @@ export default function Home() {
                 <Image
                   src={petImage.url}
                   width={200}
-                  maxHeight={350}
-                  minHeight={275}
+                  height={275}
                   alt={petImage.name}
                 ></Image>
               </button>
