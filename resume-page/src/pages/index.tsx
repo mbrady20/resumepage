@@ -63,7 +63,7 @@ export default function Home() {
 
             </Center>
             <Center>
-              <Text color="green.500">
+              <Text color="green.500" textAlign={"center"}>
             After you done try uploading a picture of your pet to see how they stack up!
             </Text>
             </Center>
