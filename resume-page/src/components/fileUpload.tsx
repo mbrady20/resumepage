@@ -23,12 +23,17 @@ export default function FileUpload(props: { userId: string; }) {
   const [imageUploaded, setImageUploaded] = useState(false);
   const [textInputVal, setTextInputVal] = useState("");
   const [imagePreviewed, setImagePreviewed] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const onInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     else if (!e.target.files[0]) return;
     setInput(e.target.files[0]);
   };
+  function disablebutton(){
+    const btn = document.getElementById("submit") as HTMLButtonElement | null;
+    btn!.disabled = true;
+}
   const uploadImage = () => {
     if (input == null) return;
     const tempName = input.name + uuidv4();
@@ -51,7 +56,7 @@ export default function FileUpload(props: { userId: string; }) {
   };
 
   const submitPet = async () => {
-    if (imageRef) setImageDisplayUrl(await getDownloadURL(imageRef));
+    if (imageRef) {setImageDisplayUrl(await getDownloadURL(imageRef));
 
     const docRef = await addDoc(collection(db, "pets"), {
       name: `${textInputVal.charAt(0).toLocaleUpperCase() + textInputVal.slice(1)}`,
@@ -62,6 +67,8 @@ export default function FileUpload(props: { userId: string; }) {
       roundsPlayed: 0,
       userId: props.userId
     });
+    setSubmitted(true);
+    }
   };
 
   const closeButton = () => {
@@ -108,7 +115,10 @@ export default function FileUpload(props: { userId: string; }) {
         placeholder="Your Pet's Name"
       />
       <Center>
-      <Button onClick={submitPet}>Submit Pet</Button>
+      <Button id="submit" onClick={submitPet}>Submit Pet</Button>
+      </Center>
+      <Center>
+     {submitted && <Text>Your pet has been uploaded... Check them out back in the pet quiz!</Text>}
       </Center>
     </Container>
   );

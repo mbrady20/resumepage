@@ -186,7 +186,7 @@ export default function Home() {
   
 
   const submitPost = async () => {
-    const button = document.getElementById("submit")
+
     disablebutton();
     let first = "";
     let second = "";
