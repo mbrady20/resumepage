@@ -46,7 +46,7 @@ export default function Home() {
         </Container>
         <Container>
           <Text fontSize="20px" color="gray.500" textAlign="center">
-            I am a rising Junior at UW Madison majoring in Computer Science,
+            I am a Junior at UW Madison majoring in Computer Science,
             Math and Philosophy. I have experience in Java and Javascript
           </Text>
           <Container paddingY="40px">
