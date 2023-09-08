@@ -63,7 +63,7 @@ export default function AboutPage() {
             <CardBody>
             <CardBody>
                 <Stack divider={<StackDivider />} spacing="4">
-                  <Text>At the University of Wisconsin I&apos;m majoring in Math, Computer Science and Physics.</Text>
+                  <Text>At the University of Wisconsin I&apos;m majoring in Math, Computer Science and Philosophy.</Text>
 
                   <Text>During my free time I go to Badger games with my friends, practice at the Jiu Jitsu club and game at the Super Smash Bros. club.</Text>
                 </Stack>
